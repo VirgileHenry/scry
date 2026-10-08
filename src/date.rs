@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use amane::{Column, End, Layer, LayerWindow, Margin, Monitor, Parent, Service, Text, Weight, children};
+use amane::{children, Column, End, Layer, LayerWindow, Margin, Monitor, Parent, Service, Text, Weight};
 
 const TIME_SIZE: f32 = 160.0;
 const DATE_SIZE: f32 = 32.0;
