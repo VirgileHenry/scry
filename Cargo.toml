@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-amane = { git = "https://github.com/MystiaFin/amane", rev = "3080024" }
+amane = { git = "https://github.com/MystiaFin/amane", rev = "dc2e2a6" }
 chrono = "0.4.45"
 freedesktop-desktop-entry = { version = "0.8.3", default-features = false }
 freedesktop-icons = "0.4.0"

@@ -35,7 +35,7 @@ pub struct Clock {
 }
 
 impl Service for Clock {
-    fn load() -> Self {
+    fn new() -> Self {
         Self { time: now() }
     }
 

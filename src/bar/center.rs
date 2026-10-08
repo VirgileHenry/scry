@@ -8,7 +8,7 @@ pub struct ActiveWindow {
 }
 
 impl Service for ActiveWindow {
-    fn load() -> Self {
+    fn new() -> Self {
         let title = match hipc::commands::active_window() {
             Ok(window) => window.title.to_string(),
             Err(_) => ":)".to_string(),

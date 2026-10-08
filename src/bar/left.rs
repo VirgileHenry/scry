@@ -61,7 +61,7 @@ impl Workspaces {
 }
 
 impl Service for Workspaces {
-    fn load() -> Self {
+    fn new() -> Self {
         Self {
             icons: icons::IconCollection::new(),
             workspace_icons: std::array::from_fn(|_| None),

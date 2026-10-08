@@ -15,7 +15,7 @@ pub struct DesktopClock {
 }
 
 impl Service for DesktopClock {
-    fn load() -> Self {
+    fn new() -> Self {
         let (time, date) = now();
         Self { time, date }
     }

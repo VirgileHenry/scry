@@ -18,7 +18,7 @@ pub struct Battery {
 }
 
 impl Service for Battery {
-    fn load() -> Self {
+    fn new() -> Self {
         let mut battery = Self {
             path: find(),
             ..Self::default()
