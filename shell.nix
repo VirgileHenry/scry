@@ -1,19 +1,19 @@
 { pkgs ? import <nixpkgs> {} }:
 
 pkgs.mkShell rec {
-  nativeBuildInputs = with pkgs; [
-    pkg-config
+  nativeBuildInputs = [
+    pkgs.pkg-config
   ];
 
-  buildInputs = with pkgs; [
-    wayland
-    libxkbcommon
-    fontconfig
-    freetype
-    expat
-    vulkan-loader
-    libpulseaudio
-    linux-pam
+  buildInputs = [
+    pkgs.wayland
+    pkgs.libxkbcommon
+    pkgs.fontconfig
+    pkgs.freetype
+    pkgs.expat
+    pkgs.vulkan-loader
+    pkgs.libpulseaudio
+    pkgs.linux-pam
   ];
 
   LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath buildInputs;

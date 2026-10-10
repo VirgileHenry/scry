@@ -49,3 +49,9 @@ pub fn ring(size: f32, thickness: f32, value: f32, color: amane::Color, track: a
 pub fn icon(glyph: &str, size: f32, color: amane::Color) -> amane::Text {
     amane::Text::new(glyph).size(size).font(crate::theme::NERD).color(color)
 }
+
+/// Add ident by adding an empty rectanlge in a row in front of it
+pub fn indent(ident: f32, widget: impl amane::Widget + 'static) -> amane::Row {
+    let ident = amane::Rectangle::new().width(ident).height(0.0);
+    amane::Row::new(amane::children![ident, widget]).width(amane::Parent)
+}
