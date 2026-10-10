@@ -9,6 +9,10 @@ const PILL_HEIGHT: f32 = super::ITEM_HEIGHT;
 const RING_SIZE: f32 = PILL_HEIGHT - 4.0;
 const RING_THICKNESS: f32 = 5.0;
 
+const STATUS_BAR_ITEM_SIZE: f32 = super::ITEM_HEIGHT;
+const STATUS_BAR_GAP: f32 = 4.0;
+const STATUS_BAR_HORIZONTAL_PADDING: f32 = 8.0;
+
 /// Size of the standalone glyphs (bluetooth, network).
 const GLYPH_SIZE: f32 = 20.0;
 
@@ -22,7 +26,6 @@ const BATTERY_SIZE: f32 = 16.0;
 
 /// Space between items, and padding inside the pill.
 const GAP: f32 = 16.0;
-const PILL_PADDING: f32 = 12.0;
 
 // how far one wheel step moves the volume
 const STEP: i32 = 5;
@@ -84,16 +87,29 @@ pub fn view(width: f32) -> amane::Rectangle {
 
 // bluetooth, volume and network in one capsule
 fn status() -> amane::Rectangle {
-    let row = amane::Row::new(amane::children![bluetooth(), volume(), network()])
-        .gap(GAP)
-        .align(amane::Center);
+    let row = amane::Row::new(amane::children![
+        amane::Rectangle::new().width(STATUS_BAR_HORIZONTAL_PADDING).height(0.0),
+        status_bar_item(bluetooth()),
+        status_bar_item(volume()),
+        status_bar_item(network()),
+        amane::Rectangle::new().width(STATUS_BAR_HORIZONTAL_PADDING).height(0.0),
+    ])
+    .gap(STATUS_BAR_GAP)
+    .align(amane::Center);
 
-    // two glyphs and the ring, separated by two gaps, plus padding on each side
-    let width = GLYPH_SIZE * 2.0 + RING_SIZE + GAP * 2.0 + PILL_PADDING * 2.0;
+    let status_bar_width = STATUS_BAR_ITEM_SIZE * 3.0 + STATUS_BAR_GAP * 2.0 + STATUS_BAR_HORIZONTAL_PADDING * 2.0;
 
-    crate::utils::pill(width, PILL_HEIGHT, crate::theme::BACKGROUND_HIGHLIGHT)
+    crate::utils::pill(status_bar_width, PILL_HEIGHT, crate::theme::BACKGROUND_HIGHLIGHT)
         .align_child(amane::Center, amane::Center)
         .child(row)
+}
+
+fn status_bar_item(item: impl amane::Widget + 'static) -> amane::Rectangle {
+    amane::Rectangle::new()
+        .width(STATUS_BAR_ITEM_SIZE)
+        .height(STATUS_BAR_ITEM_SIZE)
+        .align_child(amane::Align::Center, amane::Align::Center)
+        .child(item)
 }
 
 fn bluetooth() -> amane::Rectangle {

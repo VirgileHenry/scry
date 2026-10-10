@@ -37,20 +37,18 @@ impl Service for ActiveWindow {
 }
 
 pub fn view(width: f32) -> amane::Rectangle {
+    use amane::Widget;
+
     let window = ActiveWindow::read();
 
-    /* long titles are cut off before they reach the sides */
-    let text_width = crate::utils::text_width(&window.title, SIZE).min(width);
+    /* a title that fits keeps its own width and gets centered, a longer one is cut off at the sides */
+    let label = crate::utils::label(&window.title, SIZE);
+    let fits = matches!(label.width(), amane::Size::Fixed(w) if w <= width);
+    let label = if fits { label } else { label.elide() };
 
     amane::Rectangle::new()
         .width(width)
         .height(amane::Parent)
         .align_child(amane::Center, amane::Center)
-        .child(
-            amane::Rectangle::new()
-                .width(text_width)
-                .height(amane::Parent)
-                .align_child(amane::Center, amane::Center)
-                .child(crate::utils::label(&window.title, SIZE).elide()),
-        )
+        .child(label)
 }

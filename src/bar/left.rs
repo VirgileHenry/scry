@@ -202,11 +202,7 @@ fn workspace_slot() -> amane::Rectangle {
 }
 
 fn workspace_text_widget(text: &str) -> amane::Rectangle {
-    workspace_slot().child(
-        amane::Text::new(text)
-            .size(WORKSPACE_ITEM_SIZE * 0.6)
-            .color(crate::theme::TEXT),
-    )
+    workspace_slot().child(crate::utils::label(text, WORKSPACE_ITEM_SIZE * 0.6).color(crate::theme::TEXT))
 }
 
 fn workspace_icon_widget(icon_path: &std::path::PathBuf) -> amane::Rectangle {

@@ -46,8 +46,7 @@ pub fn view(_monitor: &amane::Monitor) -> amane::LayerWindow {
 
     let mut content: Vec<Box<dyn amane::Widget>> = Vec::new();
     content.push(Box::new(
-        amane::Text::new("File Systems:")
-            .size(40.0)
+        crate::utils::label("File Systems:", 40.0)
             .weight(amane::Weight::Medium)
             .color(amane::Color::from(crate::theme::BACKGROUND_HIGHLIGHT)),
     ));
@@ -56,12 +55,11 @@ pub fn view(_monitor: &amane::Monitor) -> amane::LayerWindow {
     }
 
     let last_update = match service.last_update() {
-        Some(last_update) => format!("(Updated at {})", last_update.naive_local().format("%H:%M")),
+        Some(last_update) => format!("(Updated at {})", last_update.with_timezone(&chrono::Local).format("%H:%M")),
         None => "Updating...".to_string(),
     };
     content.push(Box::new(
-        amane::Text::new(last_update)
-            .size(16.0)
+        crate::utils::label(last_update, 16.0)
             .weight(amane::Weight::Light)
             .color(crate::theme::BACKGROUND_HIGHLIGHT),
     ));
@@ -89,16 +87,16 @@ pub fn view(_monitor: &amane::Monitor) -> amane::LayerWindow {
 
 /// "/home   120.4 GiB / 476.9 GiB (25%)", the stacked bar, then each watched directory.
 fn fs_card(fs: &amane_disk_usage::FileSystemUsage, dirs: &[(&amane_disk_usage::DirectoryUsage, amane::Color)]) -> amane::Column {
-    let title = amane::Text::new(fs.mount_point().to_string_lossy())
-        .size(22.0)
-        .color(crate::theme::BACKGROUND);
-    let usage = amane::Text::new(format!(
-        "{} / {} ({}%)",
-        human(fs.used()),
-        human(fs.total()),
-        percent(fs.used(), fs.total())
-    ))
-    .size(22.0)
+    let title = crate::utils::label(fs.mount_point().to_string_lossy(), 22.0).color(crate::theme::BACKGROUND);
+    let usage = crate::utils::label(
+        format!(
+            "{} / {} ({}%)",
+            human(fs.used()),
+            human(fs.total()),
+            percent(fs.used(), fs.total())
+        ),
+        22.0,
+    )
     .weight(amane::Weight::Light)
     .color(crate::theme::BACKGROUND_HIGHLIGHT);
 
@@ -141,8 +139,7 @@ fn fs_card(fs: &amane_disk_usage::FileSystemUsage, dirs: &[(&amane_disk_usage::D
 
 /// "name: 12.3 GiB" and a bar of the directory's size over the whole file system.
 fn dir_line(dir: &amane_disk_usage::DirectoryUsage, color: amane::Color, fs_total: u64) -> amane::Column {
-    let label = amane::Text::new(format!("{}: {}", dir.name(), human(dir.usage())))
-        .size(18.0)
+    let label = crate::utils::label(format!("{}: {}", dir.name(), human(dir.usage())), 18.0)
         .weight(amane::Weight::Light)
         .color(crate::theme::BACKGROUND);
 

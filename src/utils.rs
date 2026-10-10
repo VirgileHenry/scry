@@ -1,12 +1,5 @@
-/// Compute the text width to place it at the correct position
-pub fn text_width(text: &str, size: f32) -> f32 {
-    /* amane has no size-to-content yet, so widths are guessed from the text */
-    /* Poppins averages about 0.62 of its size per character */
-    text.chars().count() as f32 * size * 0.62
-}
-
 /// Creates a new label with the common styling
-pub fn label(text: &str, size: f32) -> amane::Text {
+pub fn label(text: impl Into<String>, size: f32) -> amane::Text {
     amane::Text::new(text)
         .size(size)
         .font(crate::theme::BODY)

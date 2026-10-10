@@ -111,8 +111,7 @@ impl DisplayedEvents {
 
     fn category_view(category_name: &str, events: &[amane_calendar::Event]) -> impl Iterator<Item = Box<dyn amane::Widget>> {
         let section_title = std::iter::once(Box::new(
-            amane::Text::new(category_name)
-                .size(40.0)
+            crate::utils::label(category_name, 40.0)
                 .weight(amane::Weight::Medium)
                 .color(amane::Color::from(crate::theme::BACKGROUND_HIGHLIGHT)),
         ) as Box<dyn amane::Widget>);
@@ -131,9 +130,8 @@ pub fn view(_monitor: &amane::Monitor) -> amane::LayerWindow {
     let _minute = Minute::read();
     let service = amane_calendar::CalendarService::read();
 
-    let last_update = service.last_update().naive_local().format("%H:%M");
-    let last_update_widget = amane::Text::new(format!("(Updated at {})", last_update))
-        .size(16.0)
+    let last_update = service.last_update().with_timezone(&chrono::Local).format("%H:%M");
+    let last_update_widget = crate::utils::label(format!("(Updated at {})", last_update), 16.0)
         .weight(amane::Weight::Light)
         .color(crate::theme::BACKGROUND_HIGHLIGHT);
 
@@ -163,9 +161,8 @@ fn event_card(event: &amane_calendar::Event) -> amane::Column {
 
     let title = event.event.get_summary().unwrap_or("(no title)");
 
-    let title = amane::Text::new(title).size(22.0).color(crate::theme::BACKGROUND);
-    let schedule = amane::Text::new(schedule_label(&event.schedule))
-        .size(22.0)
+    let title = crate::utils::label(title, 22.0).color(crate::theme::BACKGROUND);
+    let schedule = crate::utils::label(schedule_label(&event.schedule), 22.0)
         .weight(amane::Weight::Light)
         .color(crate::theme::BACKGROUND_HIGHLIGHT);
 
@@ -204,8 +201,7 @@ fn event_card(event: &amane_calendar::Event) -> amane::Column {
 
 fn add_description_line(desc: &mut Vec<Box<dyn amane::Widget>>, text: &str) {
     desc.push(Box::new(
-        amane::Text::new(text)
-            .size(18.0)
+        crate::utils::label(text, 18.0)
             .weight(amane::Weight::Light)
             .color(crate::theme::BACKGROUND),
     ));

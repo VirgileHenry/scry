@@ -1,9 +1,10 @@
 use std::time::Duration;
 
-use amane::{children, Column, End, Layer, LayerWindow, Margin, Monitor, Parent, Service, Text, Weight};
-
-const TIME_SIZE: f32 = 160.0;
+const TIME_SIZE: f32 = 150.0;
 const DATE_SIZE: f32 = 32.0;
+
+const DIGIT_WIDTH: f32 = TIME_SIZE * 0.54;
+const COLON_WIDTH: f32 = TIME_SIZE * 0.30;
 
 /// Distance from the top right corner of the usable area.
 const MARGIN: i32 = 40;
@@ -14,7 +15,7 @@ pub struct DesktopClock {
     date: String,
 }
 
-impl Service for DesktopClock {
+impl amane::Service for DesktopClock {
     fn new() -> Self {
         let (time, date) = now();
         Self { time, date }
@@ -39,31 +40,45 @@ fn now() -> (String, String) {
     (now.format("%H:%M:%S").to_string(), now.format("%A %-d %B %Y").to_string())
 }
 
-pub fn view(_monitor: &Monitor) -> LayerWindow {
+pub fn view(_monitor: &amane::Monitor) -> amane::LayerWindow {
+    use amane::Service;
     let clock = DesktopClock::read();
 
-    LayerWindow::new()
+    amane::LayerWindow::new()
         .width(amane::WindowSize::Full)
         .height(amane::WindowSize::Full)
-        .margin(Margin {
+        .margin(amane::Margin {
             top: MARGIN,
             right: MARGIN,
             bottom: 0,
             left: 0,
         })
-        .layer(Layer::Bottom)
+        .layer(amane::Layer::Bottom)
         .click_through()
         .child(
-            Column::new(children![
-                Text::new(&clock.time)
-                    .size(TIME_SIZE)
-                    .weight(Weight::ExtraBold)
-                    .color(crate::theme::BACKGROUND),
-                Text::new(&clock.date).size(DATE_SIZE).color(crate::theme::BACKGROUND),
+            amane::Column::new(amane::children![
+                time_row(&clock.time),
+                crate::utils::label(&clock.date, DATE_SIZE).color(crate::theme::BACKGROUND),
             ])
-            .width(Parent)
-            .height(Parent)
-            .gap(-TIME_SIZE * 0.2)
-            .align(End),
+            .width(amane::Parent)
+            .height(amane::Parent)
+            .align(amane::End),
         )
+}
+
+fn time_row(time: &str) -> amane::Row {
+    let chars = time.chars().map(|c| {
+        let width = if c == ':' { COLON_WIDTH } else { DIGIT_WIDTH };
+        amane::Rectangle::new()
+            .width(width)
+            .height(TIME_SIZE)
+            .child(
+                crate::utils::label(&c.to_string(), TIME_SIZE)
+                    .weight(amane::Weight::SemiBold)
+                    .color(crate::theme::BACKGROUND),
+            )
+            .align_child(amane::Center, amane::Center)
+    });
+    let content = chars.map(|c| Box::new(c) as Box<dyn amane::Widget>).collect();
+    amane::Row::new(content)
 }
