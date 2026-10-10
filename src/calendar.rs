@@ -1,6 +1,3 @@
-use amane::*;
-use amane_calendar::icalendar::{Component, EventLike};
-
 /// The number of calendar events shown per calendar.
 const SHOWN: usize = 4;
 
@@ -13,7 +10,7 @@ const LEFT_MARGIN: i32 = 24;
 /// A view only has to read it to be redrawn on every new minute.
 struct Minute(i64);
 
-impl Service for Minute {
+impl amane::Service for Minute {
     fn new() -> Self {
         Self(0)
     }
@@ -114,10 +111,10 @@ impl DisplayedEvents {
 
     fn category_view(category_name: &str, events: &[amane_calendar::Event]) -> impl Iterator<Item = Box<dyn amane::Widget>> {
         let section_title = std::iter::once(Box::new(
-            Text::new(category_name)
+            amane::Text::new(category_name)
                 .size(40.0)
-                .weight(Weight::Medium)
-                .color(Color::from(crate::theme::BACKGROUND_HIGHLIGHT)),
+                .weight(amane::Weight::Medium)
+                .color(amane::Color::from(crate::theme::BACKGROUND_HIGHLIGHT)),
         ) as Box<dyn amane::Widget>);
         let events = events
             .iter()
@@ -128,12 +125,14 @@ impl DisplayedEvents {
     }
 }
 
-pub fn view(_monitor: &Monitor) -> LayerWindow {
+pub fn view(_monitor: &amane::Monitor) -> amane::LayerWindow {
+    use amane::Service;
+
     let _minute = Minute::read();
     let service = amane_calendar::CalendarService::read();
 
-    let last_update = service.last_update().format("%H:%M");
-    let last_update_widget = Text::new(format!("(Updated at {})", last_update))
+    let last_update = service.last_update().naive_local().format("%H:%M");
+    let last_update_widget = amane::Text::new(format!("(Updated at {})", last_update))
         .size(16.0)
         .weight(amane::Weight::Light)
         .color(crate::theme::BACKGROUND_HIGHLIGHT);
@@ -142,34 +141,37 @@ pub fn view(_monitor: &Monitor) -> LayerWindow {
     let mut content = events.view();
     content.push(Box::new(last_update_widget) as Box<dyn amane::Widget>);
 
-    LayerWindow::new()
+    amane::LayerWindow::new()
         .width(amane::WindowSize::Full)
         .height(amane::WindowSize::Full)
-        .anchor_vertical(Vertical::Top)
-        .anchor_horizontal(Horizontal::Left)
-        .margin(Margin {
+        .anchor_vertical(amane::Vertical::Top)
+        .anchor_horizontal(amane::Horizontal::Left)
+        .margin(amane::Margin {
             top: TOP_MARGIN,
             left: LEFT_MARGIN,
             ..amane::Margin::default()
         })
-        .layer(Layer::Bottom)
+        .layer(amane::Layer::Bottom)
         .click_through()
         .namespace("calendar")
         .child(amane::Column::new(content).gap(12.0))
 }
 
-fn event_card(event: &amane_calendar::Event) -> Column {
+fn event_card(event: &amane_calendar::Event) -> amane::Column {
+    use amane_calendar::icalendar::Component;
+    use amane_calendar::icalendar::EventLike;
+
     let title = event.event.get_summary().unwrap_or("(no title)");
 
-    let title = Text::new(title).size(22.0).color(crate::theme::BACKGROUND);
-    let schedule = Text::new(schedule_label(&event.schedule))
+    let title = amane::Text::new(title).size(22.0).color(crate::theme::BACKGROUND);
+    let schedule = amane::Text::new(schedule_label(&event.schedule))
         .size(22.0)
         .weight(amane::Weight::Light)
         .color(crate::theme::BACKGROUND_HIGHLIGHT);
 
-    let event_header = Row::new(children![title, schedule])
-        .width(Parent)
-        .gap(8.0)
+    let event_header = amane::Row::new(amane::children![title, schedule])
+        .width(amane::Parent)
+        .gap(24.0)
         .align(amane::Align::Start);
 
     let mut desc_content = Vec::new();
@@ -193,14 +195,16 @@ fn event_card(event: &amane_calendar::Event) -> Column {
         add_description_line(&mut desc_content, &format!("@ {loc}"));
     }
 
-    let description = crate::utils::indent(10.0, Column::new(desc_content).width(Parent));
+    let description = crate::utils::indent(10.0, amane::Column::new(desc_content).width(amane::Parent));
 
-    Column::new(children![event_header, description]).width(Parent).gap(2.0)
+    amane::Column::new(amane::children![event_header, description])
+        .width(amane::Parent)
+        .gap(2.0)
 }
 
 fn add_description_line(desc: &mut Vec<Box<dyn amane::Widget>>, text: &str) {
     desc.push(Box::new(
-        Text::new(text)
+        amane::Text::new(text)
             .size(18.0)
             .weight(amane::Weight::Light)
             .color(crate::theme::BACKGROUND),

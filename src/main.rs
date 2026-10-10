@@ -1,6 +1,7 @@
 mod bar;
 mod calendar;
 mod date;
+mod disk_usage;
 mod theme;
 
 mod utils;
@@ -20,10 +21,16 @@ fn main() {
         include_str!("calendars/bday_calendar.secret").trim().to_string(),
     );
 
+    amane_disk_usage::DiskUsageService::write().watch_directory("/nix/store".to_string(), "/nix/store");
+    amane_disk_usage::DiskUsageService::write().watch_directory("~/Downloads".to_string(), "/home/eclipse/Downloads");
+    amane_disk_usage::DiskUsageService::write().watch_directory("~/dev/rust".to_string(), "/home/eclipse/dev/rust");
+    amane_disk_usage::DiskUsageService::write().watch_directory("~/dev/projects".to_string(), "/home/eclipse/dev/projects");
+
     App::new()
         .window_per_monitor(bar::view)
         .window_per_monitor(date::view)
         .window_per_monitor(calendar::view)
+        .window_per_monitor(disk_usage::view)
         .run();
 }
 

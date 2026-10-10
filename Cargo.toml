@@ -7,6 +7,7 @@ edition = "2024"
 amane = { git = "https://github.com/MystiaFin/amane", rev = "dc2e2a6" }
 amane-calendar = { git = "https://github.com/VirgileHenry/amane-calendar", rev = "4946b0e" }
 chrono = "0.4.45"
+amane-disk-usage = { git = "https://github.com/VirgileHenry/amane-disk-usage", rev = "9bbbd1a" }
 freedesktop-desktop-entry = { version = "0.8.3", default-features = false }
 freedesktop-icons = "0.4.0"
 hipc = { git = "https://github.com/VirgileHenry/hipc", rev = "3df9834" }
